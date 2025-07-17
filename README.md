@@ -27,7 +27,6 @@ SUPABASE_KEY=your-key
 OPENAI_API_KEY=sk-...
 ```
 
-Then install dependencies and start the dev server:
 
 ```bash
 cd frontend
@@ -36,3 +35,4 @@ npm run dev
 ```
 
 Both servers run on their default ports (Backend: `3001`, Frontend: `3000`). The frontend proxies API requests to the backend during development.
+

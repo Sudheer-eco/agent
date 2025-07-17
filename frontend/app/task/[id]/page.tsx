@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+
+import { useRouter, useParams } from 'next/navigation';
 import ChatInput from '../../components/ChatInput';
 import ChatMessage from '../../components/ChatMessage';
 
@@ -12,6 +13,9 @@ interface Message {
 }
 
 export default function TaskThread() {
+
+  const router = useRouter();
+
   const params = useParams();
   const [messages, setMessages] = useState<Message[]>([]);
 
@@ -23,6 +27,7 @@ export default function TaskThread() {
       const data = await res.json();
       setMessages(data);
     }
+
   }
 
   useEffect(() => {
@@ -56,6 +61,7 @@ export default function TaskThread() {
           },
         ]);
       }
+
     }
   }
 
