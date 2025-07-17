@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+
 import { useRouter, useParams } from 'next/navigation';
 import ChatInput from '../../components/ChatInput';
 import ChatMessage from '../../components/ChatMessage';
@@ -12,24 +13,21 @@ interface Message {
 }
 
 export default function TaskThread() {
+
   const router = useRouter();
+
   const params = useParams();
   const [messages, setMessages] = useState<Message[]>([]);
 
   const taskId = params?.id as string;
 
   async function load() {
-    const res = await fetch(`/api/tasks/${taskId}`, { credentials: 'include' });
-    if (res.status === 401) {
-      router.push('/login');
-      return;
+    const res = await fetch(`/api/tasks/${taskId}/chat`);
+    if (res.ok) {
+      const data = await res.json();
+      setMessages(data);
     }
-    if (!res.ok) {
-      router.push('/');
-      return;
-    }
-    const data = await res.json();
-    setMessages(data.messages);
+
   }
 
   useEffect(() => {
@@ -37,15 +35,33 @@ export default function TaskThread() {
   }, [taskId]);
 
   async function send(text: string) {
-    const res = await fetch(`/api/tasks/${taskId}/messages`, {
+    const res = await fetch('/api/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ text }),
+      body: JSON.stringify({ taskId, text }),
     });
+
     if (res.ok) {
-      const msg = await res.json();
-      setMessages((m) => [...m, msg]);
+      const userMsg = await res.json();
+      setMessages((m) => [...m, userMsg]);
+      const gptRes = await fetch('/api/gpt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ taskId }),
+      });
+      if (gptRes.ok) {
+        const bot = await gptRes.json();
+        setMessages((m) => [
+          ...m,
+          {
+            id: Math.random().toString(),
+            author: 'assistant',
+            text: bot.text,
+            created: Date.now(),
+          },
+        ]);
+      }
+
     }
   }
 

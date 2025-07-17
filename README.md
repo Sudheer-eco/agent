@@ -19,6 +19,15 @@ npm start
 
 ### Frontend
 
+Create a `.env` file inside `frontend` with your Supabase and OpenAI credentials:
+
+```bash
+SUPABASE_URL=your-url
+SUPABASE_KEY=your-key
+OPENAI_API_KEY=sk-...
+```
+
+
 ```bash
 cd frontend
 npm install
